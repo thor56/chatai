@@ -1,0 +1,100 @@
+{% extends "layout.html" %}
+
+{% block title %}Dashboard - Flask AI Chat{% endblock %}
+
+{% block head %}
+<style>
+    .branch-badge {
+        font-size: 0.7rem;
+        margin-right: 5px;
+    }
+    .branch-link {
+        font-size: 0.8rem;
+    }
+    .conversation-item {
+        transition: background-color 0.2s;
+    }
+    .conversation-item:hover {
+        background-color: #f8f9fa;
+    }
+    .conversation-metadata {
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+    .branch-indicator {
+        border-left: 3px solid #17a2b8;
+        padding-left: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h3>Welcome to your Dashboard</h3>
+        <a href="{{ url_for('new_conversation') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> New Conversation
+        </a>
+    </div>
+    <div class="card-body">
+        <h4>Hello, {{ username }}!</h4>
+        <p>You've successfully logged in to your account.</p>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h4>Your Conversations</h4>
+    </div>
+    <div class="card-body">
+        {% if conversations %}
+            <div class="list-group">
+                {% for conv in conversations %}
+                <a href="{{ url_for('conversation', conversation_id=conv._id) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center conversation-item {% if conv.parent_conversation_id %}branch-indicator{% endif %}">
+                    <div>
+                        <h5 class="mb-1">{{ conv.title }}</h5>
+                        <div class="conversation-metadata">
+                            <span>Created: {{ conv.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                            {% if conv.updated_at != conv.created_at %}
+                                <span> • Updated: {{ conv.updated_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                            {% endif %}
+                        </div>
+                        {% if conv.parent_conversation_id %}
+                            <div class="mt-2">
+                                <span class="badge bg-info branch-badge">
+                                    <i class="fas fa-code-branch"></i> Branch
+                                </span>
+                                <a href="{{ url_for('conversation', conversation_id=conv.parent_conversation_id) }}" class="branch-link">
+                                    View Parent Conversation
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="d-flex flex-column align-items-end">
+                        <span class="badge bg-primary rounded-pill mb-2">
+                            <i class="fas fa-comment"></i>
+                        </span>
+                        {% if conv.model %}
+                            <small class="text-muted">{{ conv.model }}</small>
+                        {% endif %}
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-4">
+                <p>You don't have any conversations yet.</p>
+                <a href="{{ url_for('new_conversation') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Start a New Conversation
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+ 
